@@ -13,6 +13,7 @@ class InlineSkatingDelegate extends Ui.BehaviorDelegate {
         BehaviorDelegate.initialize();
     }
 
+    // TODO: use button instead of menu?
     function onMenu() {
         if (Toybox has :ActivityRecording) {
             if (session == null) {
@@ -53,23 +54,24 @@ class InlineSkatingView extends Ui.View {
         }
     }
 
-    // Load your resources here
+    //! Load your resources here
     function onLayout(dc) {
     }
 
-    // Called when this View is brought to the foreground. Restore
-    // the state of this View and prepare it to be shown. This includes
-    // loading resources into memory.
+    //! Called when this View is brought to the foreground. Restore
+    //! the state of this View and prepare it to be shown. This includes
+    //! loading resources into memory.
     function onShow() {
         mTimer.start(method(:timerCallback), 1000, true);
         Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:onPosition));
     }
 
+    //! Callback for triggering UI updates
     function timerCallback() {
         Ui.requestUpdate();
     }
 
-    // Format the time into hour minute second
+    //! Format the time into hour minute second
     function formatTime(time) {
         var second = (time / 1000) % 60;
         var minute = (time / (1000 * 60)) % 60;
@@ -84,7 +86,7 @@ class InlineSkatingView extends Ui.View {
         }
     }
 
-    // Update the view
+    //! Update the view
     function onUpdate(dc) {
         // Set background color
         dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_LT_GRAY);
@@ -97,12 +99,18 @@ class InlineSkatingView extends Ui.View {
 
         var activity = Activity.getActivityInfo();
         var hasActivity = activity != null && session != null;
+
+        // TODO: if paused - show paused, time, distance, done
+        // TODO: if done - show save/discard
+
         if (hasActivity) {
             timer = formatTime(activity.timerTime);
             if (activity.elapsedDistance != null) {
+                // TODO: convert distance based on distance units
                 distance = (activity.elapsedDistance * 0.00062137).format("%0.2f");
             }
             if (activity.currentSpeed != null) {
+                // TODO: switch to pace instead of speed?
                 speed = (activity.currentSpeed * 2.23694).format("%0.1f");
             }
             if (activity.currentHeartRate != null) {
@@ -184,14 +192,15 @@ class InlineSkatingView extends Ui.View {
         }
     }
 
-    // Called when this View is removed from the screen. Save the
-    // state of this View here. This includes freeing resources from
-    // memory.
+    //! Called when this View is removed from the screen. Save the
+    //! state of this View here. This includes freeing resources from
+    //! memory.
     function onHide() {
         mTimer.stop();
         Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:onPosition));
     }
 
+    //! Handle position events (no action necessary)
     function onPosition(info) {
     }
 }
