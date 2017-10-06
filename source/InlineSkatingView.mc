@@ -94,7 +94,7 @@ class InlineSkatingView extends Ui.View {
 
         var timer = "0:00";
         var distance = "0.00";
-        var speed = "0.0";
+        var pace = "-:--";
         var heartRate = "   ---";
 
         var activity = Activity.getActivityInfo();
@@ -109,9 +109,12 @@ class InlineSkatingView extends Ui.View {
                 // TODO: convert distance based on distance units
                 distance = (activity.elapsedDistance * 0.00062137).format("%0.2f");
             }
-            if (activity.currentSpeed != null) {
-                // TODO: switch to pace instead of speed?
-                speed = (activity.currentSpeed * 2.23694).format("%0.1f");
+            if (activity.currentSpeed != null && activity.currentSpeed != 0) {
+                // TODO: convert distance based on distance units
+                var minutesPerMile = 26.8224 / activity.currentSpeed;
+                var fullMinutes = minutesPerMile.format("%d");
+                var fullSeconds = ((minutesPerMile - minutesPerMile.toNumber()) * 60).format("%02d");
+                pace = Lang.format("$1$:$2$", [fullMinutes, fullSeconds]);
             }
             if (activity.currentHeartRate != null) {
                 heartRate = "   " + activity.currentHeartRate.format("%d");
@@ -148,12 +151,12 @@ class InlineSkatingView extends Ui.View {
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
         dc.drawLine(0, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2);
 
-        // speed
+        // pace
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, LABEL_FONT, "Speed", Gfx.TEXT_JUSTIFY_CENTER);
+        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, LABEL_FONT, "Pace", Gfx.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, VALUE_FONT, speed, Gfx.TEXT_JUSTIFY_CENTER);
+        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, VALUE_FONT, pace, Gfx.TEXT_JUSTIFY_CENTER);
 
         // hr
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
