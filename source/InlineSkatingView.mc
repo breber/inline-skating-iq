@@ -1,5 +1,6 @@
 using Toybox.Activity as Activity;
 using Toybox.ActivityRecording as Record;
+using Toybox.Attention as Attention;
 using Toybox.Graphics as Gfx;
 using Toybox.Position as Position;
 using Toybox.System as Sys;
@@ -27,6 +28,13 @@ class InlineSkatingDelegate extends Ui.BehaviorDelegate {
                     } else if (session.isRecording()) {
                         session.stop();
                     }
+
+                    // Vibrate indicating the session has started/stopped
+                    if (Attention has :vibrate) {
+                        Attention.vibrate([
+                            new Attention.VibeProfile(50, 2000) // On for two seconds
+                        ]);
+                    }
                 }
 
                 Ui.requestUpdate();
@@ -47,6 +55,7 @@ class InlineSkatingDelegate extends Ui.BehaviorDelegate {
 
 class InlineSkatingView extends Ui.View {
     var mTimer;
+    var mLastLap = 0;
 
     function initialize() {
         View.initialize();
@@ -101,7 +110,7 @@ class InlineSkatingView extends Ui.View {
     function convertDistance(dist) {
         var settings = Sys.getDeviceSettings();
         if (Sys.UNIT_METRIC == settings.distanceUnits) {
-            return dist / 1000;
+            return dist / 1000.0;
         } else {
             return dist * 0.00062137;
         }
@@ -119,7 +128,7 @@ class InlineSkatingView extends Ui.View {
 
         var minutesPerMile = baseUnit / speed;
         var fullSeconds = (minutesPerMile - minutesPerMile.toNumber()) * 60;
-        return [minutesPerMile.toNumber(), fullSeconds.toNumber()];
+        return [minutesPerMile.toNumber(), fullSeconds.toNumber().format("%02d")];
     }
 
     //! Update the view
@@ -234,7 +243,23 @@ class InlineSkatingView extends Ui.View {
         Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:onPosition));
     }
 
-    //! Handle position events (no action necessary)
+    //! Handle position events - add laps to fit file
     function onPosition(info) {
+        var activity = Activity.getActivityInfo();
+        if (activity != null && activity.elapsedDistance != null) {
+            var distance = Math.floor(convertDistance(activity.elapsedDistance));
+            if (distance != mLastLap) {
+                session.addLap();
+
+                // Vibrate indicating a lap has been completed
+                if (Attention has :vibrate) {
+                    Attention.vibrate([
+                        new Attention.VibeProfile(50, 1000)
+                    ]);
+                }
+
+                mLastLap = distance;
+            }
+        }
     }
 }
