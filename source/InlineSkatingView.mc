@@ -2,6 +2,7 @@ using Toybox.Activity as Activity;
 using Toybox.ActivityRecording as Record;
 using Toybox.Graphics as Gfx;
 using Toybox.Position as Position;
+using Toybox.System as Sys;
 using Toybox.Timer as Timer;
 using Toybox.WatchUi as Ui;
 
@@ -96,6 +97,31 @@ class InlineSkatingView extends Ui.View {
         }
     }
 
+    //! Convert distance from meters to either km or miles
+    function convertDistance(dist) {
+        var settings = Sys.getDeviceSettings();
+        if (Sys.UNIT_METRIC == settings.distanceUnits) {
+            return dist / 1000;
+        } else {
+            return dist * 0.00062137;
+        }
+    }
+
+    //! Convert speed (m/s) to pace in either minutes / km or minutes / miles
+    function convertPace(speed) {
+        var settings = Sys.getDeviceSettings();
+        var baseUnit = 0;
+        if (Sys.UNIT_METRIC == settings.paceUnits) {
+            baseUnit = 16.6666667;
+        } else {
+            baseUnit = 26.8224;
+        }
+
+        var minutesPerMile = baseUnit / speed;
+        var fullSeconds = (minutesPerMile - minutesPerMile.toNumber()) * 60;
+        return [minutesPerMile.toNumber(), fullSeconds.toNumber()];
+    }
+
     //! Update the view
     function onUpdate(dc) {
         // Set background color
@@ -116,15 +142,10 @@ class InlineSkatingView extends Ui.View {
         if (hasActivity) {
             timer = formatTime(activity.timerTime);
             if (activity.elapsedDistance != null) {
-                // TODO: convert distance based on distance units
-                distance = (activity.elapsedDistance * 0.00062137).format("%0.2f");
+                distance = convertDistance(activity.elapsedDistance).format("%0.2f");
             }
             if (activity.currentSpeed != null && activity.currentSpeed != 0) {
-                // TODO: convert distance based on distance units
-                var minutesPerMile = 26.8224 / activity.currentSpeed;
-                var fullMinutes = minutesPerMile.format("%d");
-                var fullSeconds = ((minutesPerMile - minutesPerMile.toNumber()) * 60).format("%02d");
-                pace = Lang.format("$1$:$2$", [fullMinutes, fullSeconds]);
+                pace = Lang.format("$1$:$2$", convertPace(activity.currentSpeed));
             }
             if (activity.currentHeartRate != null) {
                 heartRate = "   " + activity.currentHeartRate.format("%d");
