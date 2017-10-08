@@ -13,23 +13,33 @@ class InlineSkatingDelegate extends Ui.BehaviorDelegate {
         BehaviorDelegate.initialize();
     }
 
-    // TODO: use button instead of menu?
-    function onMenu() {
-        if (Toybox has :ActivityRecording) {
-            if (session == null) {
-                session = Record.createSession({:name=>"Inline Skate", :sport=>30});
-            }
-
-            if (session != null) {
-                if (!session.isRecording()) {
-                    session.start();
-                } else if (session.isRecording()) {
-                    session.stop();
+    function onKey(keyEvent) {
+        if (keyEvent.getKey() == Ui.KEY_ENTER) {
+            if (Toybox has :ActivityRecording) {
+                if (session == null) {
+                    session = Record.createSession({:name=>"Inline Skate", :sport=>30});
                 }
-            }
 
-            Ui.requestUpdate();
+                if (session != null) {
+                    if (!session.isRecording()) {
+                        session.start();
+                    } else if (session.isRecording()) {
+                        session.stop();
+                    }
+                }
+
+                Ui.requestUpdate();
+            }
         }
+        return true;
+    }
+
+    // Only allow back when there isn't a session recording
+    function onBack() {
+        if (session == null || !session.isRecording()) {
+            return BehaviorDelegate.onBack();
+        }
+
         return true;
     }
 }
