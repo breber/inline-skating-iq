@@ -39,8 +39,10 @@ class InlineSkatingDelegate extends Ui.BehaviorDelegate {
 
                 Ui.requestUpdate();
             }
+            return true;
         }
-        return true;
+
+        return false;
     }
 
     // Only allow back when there isn't a session recording
