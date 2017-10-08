@@ -144,8 +144,8 @@ class InlineSkatingView extends Ui.View {
 
         var activity = Activity.getActivityInfo();
         var hasActivity = activity != null && session != null;
+        var isPaused = hasActivity && !session.isRecording();
 
-        // TODO: if paused - show paused, time, distance, done
         // TODO: if done - show save/discard
 
         if (hasActivity) {
@@ -179,7 +179,12 @@ class InlineSkatingView extends Ui.View {
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
         dc.fillRectangle(0, 0, dc.getWidth(), TOP_BOTTOM_FONT_SIZE);
         dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, 0, TOP_BOTTOM_FONT, timer, Gfx.TEXT_JUSTIFY_CENTER);
+
+        if (isPaused) {
+            dc.drawText(dc.getWidth() / 2, TOP_BOTTOM_FONT_SIZE * .2, Gfx.FONT_SYSTEM_MEDIUM, "Paused", Gfx.TEXT_JUSTIFY_CENTER);
+        } else {
+            dc.drawText(dc.getWidth() / 2, 0, TOP_BOTTOM_FONT, timer, Gfx.TEXT_JUSTIFY_CENTER);
+        }
 
         // distance
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
@@ -191,12 +196,15 @@ class InlineSkatingView extends Ui.View {
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
         dc.drawLine(0, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2);
 
-        // pace
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, LABEL_FONT, "Pace", Gfx.TEXT_JUSTIFY_CENTER);
-
-        dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, VALUE_FONT, pace, Gfx.TEXT_JUSTIFY_CENTER);
+        if (!isPaused) {
+            // pace
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, LABEL_FONT, "Pace", Gfx.TEXT_JUSTIFY_CENTER);
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, VALUE_FONT, pace, Gfx.TEXT_JUSTIFY_CENTER);
+        } else {
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, LABEL_FONT, "Time", Gfx.TEXT_JUSTIFY_CENTER);
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, VALUE_FONT, timer, Gfx.TEXT_JUSTIFY_CENTER);
+        }
 
         // hr
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
@@ -218,14 +226,16 @@ class InlineSkatingView extends Ui.View {
         dc.fillPolygon(pts);
 
         // If we don't have an activity, draw the GPS status circle
-        if (!hasActivity) {
+        if (!hasActivity || isPaused) {
             var pos = Position.getInfo();
             var color = Gfx.COLOR_RED;
-            if (pos.accuracy == Position.QUALITY_POOR) {
-                color = Gfx.COLOR_YELLOW;
-            } else if (pos.accuracy == Position.QUALITY_GOOD ||
-                       pos.accuracy == Position.QUALITY_USABLE) {
-                color = Gfx.COLOR_GREEN;
+            if (!hasActivity) {
+                if (pos.accuracy == Position.QUALITY_POOR) {
+                    color = Gfx.COLOR_YELLOW;
+                } else if (pos.accuracy == Position.QUALITY_GOOD ||
+                           pos.accuracy == Position.QUALITY_USABLE) {
+                    color = Gfx.COLOR_GREEN;
+                }
             }
 
             dc.setColor(color, color);
