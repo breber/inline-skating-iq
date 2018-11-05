@@ -169,31 +169,31 @@ class InlineSkatingView extends Ui.View {
             }
         }
 
-        var TOP_BOTTOM_FONT = Gfx.FONT_SYSTEM_NUMBER_MEDIUM;
+        var TOP_BOTTOM_FONT = Gfx.FONT_SYSTEM_MEDIUM;
         var TOP_BOTTOM_FONT_SIZE = dc.getFontHeight(TOP_BOTTOM_FONT);
 
         var LABEL_FONT = Gfx.FONT_SYSTEM_XTINY;
         var LABEL_FONT_SIZE = dc.getFontHeight(LABEL_FONT);
 
-        var VALUE_FONT = Gfx.FONT_SYSTEM_NUMBER_HOT;
+        var VALUE_FONT = Gfx.FONT_SYSTEM_NUMBER_MEDIUM;
 
         // timer
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
-        dc.fillRectangle(0, 0, dc.getWidth(), TOP_BOTTOM_FONT_SIZE);
+        dc.fillRectangle(0, 0, dc.getWidth(), TOP_BOTTOM_FONT_SIZE * 1.2);
         dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
 
         if (isPaused) {
             dc.drawText(dc.getWidth() / 2, TOP_BOTTOM_FONT_SIZE * .2, Gfx.FONT_SYSTEM_MEDIUM, "Paused", Gfx.TEXT_JUSTIFY_CENTER);
         } else {
-            dc.drawText(dc.getWidth() / 2, 0, TOP_BOTTOM_FONT, timer, Gfx.TEXT_JUSTIFY_CENTER);
+            dc.drawText(dc.getWidth() / 2, TOP_BOTTOM_FONT_SIZE * .2, TOP_BOTTOM_FONT, timer, Gfx.TEXT_JUSTIFY_CENTER);
         }
 
         // distance
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, TOP_BOTTOM_FONT_SIZE, LABEL_FONT, "Distance", Gfx.TEXT_JUSTIFY_CENTER);
+        dc.drawText(dc.getWidth() / 2, TOP_BOTTOM_FONT_SIZE * 1.2, LABEL_FONT, "Distance", Gfx.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, TOP_BOTTOM_FONT_SIZE, VALUE_FONT, distance, Gfx.TEXT_JUSTIFY_CENTER);
+        dc.drawText(dc.getWidth() / 2, TOP_BOTTOM_FONT_SIZE * 1.2 + LABEL_FONT_SIZE, VALUE_FONT, distance, Gfx.TEXT_JUSTIFY_CENTER);
 
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
         dc.drawLine(0, dc.getHeight() / 2, dc.getWidth(), dc.getHeight() / 2);
@@ -202,15 +202,15 @@ class InlineSkatingView extends Ui.View {
         if (!isPaused) {
             // pace
             dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, LABEL_FONT, "Pace", Gfx.TEXT_JUSTIFY_CENTER);
-            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, VALUE_FONT, pace, Gfx.TEXT_JUSTIFY_CENTER);
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2 + LABEL_FONT_SIZE, VALUE_FONT, pace, Gfx.TEXT_JUSTIFY_CENTER);
         } else {
             dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, LABEL_FONT, "Time", Gfx.TEXT_JUSTIFY_CENTER);
-            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, VALUE_FONT, timer, Gfx.TEXT_JUSTIFY_CENTER);
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2 + LABEL_FONT_SIZE, VALUE_FONT, timer, Gfx.TEXT_JUSTIFY_CENTER);
         }
 
         // hr
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
-        dc.fillRectangle(0, dc.getHeight() - TOP_BOTTOM_FONT_SIZE, dc.getWidth(), dc.getHeight());
+        dc.fillRectangle(0, dc.getHeight() - TOP_BOTTOM_FONT_SIZE * 1.2, dc.getWidth(), dc.getHeight());
         dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
         dc.drawText(dc.getWidth() / 2, dc.getHeight() - 1.15 * TOP_BOTTOM_FONT_SIZE, TOP_BOTTOM_FONT, heartRate, Gfx.TEXT_JUSTIFY_CENTER);
 
